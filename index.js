@@ -6,8 +6,7 @@ const path = require('path')
 const publicDir = path.join(__dirname, '../public')
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
-const db = require('./db.js');
-const sequelize = require("./db.js");
+const db = require('./models/index');
 // constant to use express methods and middlewares
 const app = express();
 
@@ -24,7 +23,7 @@ app.use('/', authRoutes);
 app.use('/', dashboardRoutes);
 
 // database
-db.sync({ force: false })
+db.sequelize.sync({ force: false })
     .then(() => {
         console.log('Database synced successfully.');
         // Start your application
