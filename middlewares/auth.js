@@ -11,7 +11,7 @@ const validateRequest = (req, res, next) => {
         return res.status(401).json({ message: 'Invalid token' });
       }
       req.user = decoded.id; // it populates with the id
-      console.log('this is req', decoded)
+      console.log('This is the curr user after validation', decoded)
       next(); 
     });
   };
