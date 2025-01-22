@@ -46,17 +46,13 @@ module.exports = {
         return res.status(404).json('Incorrect email and password combination');
       }
       // Authenticate user with jwt
-      const token = jwt.sign({ id: user.userId }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_REFRESH_EXPIRATION
       });
-
-      res.status(200).send({
-        id: user.userId,
-        name: user.name,
-        email: user.email,
-        accessToken: token,
-      });
-    } catch (err) {
+      //req.session.user = { userId: user.id, email: user.email }; // Store essential user data in session
+      res.status(200).json({ token });
+    } catch (error) {
+      console.log(error)
       return res.status(500).send('Sign in error');
     }
   },

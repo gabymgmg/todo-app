@@ -6,6 +6,7 @@ const path = require('path')
 const publicDir = path.join(__dirname, '../public')
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
+const taskRoutes = require('./routes/tasks');
 const db = require('./models/index');
 // constant to use express methods and middlewares
 const app = express();
@@ -21,6 +22,7 @@ app.set("view engine", "pug");
 
 app.use('/', authRoutes);
 app.use('/', dashboardRoutes);
+app.use('/', taskRoutes);
 
 // database
 db.sequelize.sync({ force: false })
