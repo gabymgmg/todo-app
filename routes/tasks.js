@@ -3,10 +3,10 @@ const taskController = require('../controllers/tasks');
 const validateRequest = require('../middlewares/auth')
 
 const router = express.Router();
-router.post('/createTask', validateRequest, taskController.createTask); // 
-router.get('/getTask', validateRequest, taskController.getTask);// handles GET requests
-router.get('/getTaskList', validateRequest, taskController.getTaskList);// handles GET requests
-router.post('/modifyTask', taskController.modifyTask); // 
+router.post('/tasks', validateRequest, taskController.createTask); // Create Task
+router.get('/tasks', validateRequest, taskController.getAllTasks);// Return all tasks by userId
+router.get('/tasks/:taskId', validateRequest, taskController.getTaskById);// Return one task
+router.put('/task/:taskId', validateRequest, taskController.modifyTask); // Modify a task
+router.delete('/tasks:taskId',validateRequest, taskController.deleteTask); // 
 
-
-module.exports = router;
+module.exports = router;    
