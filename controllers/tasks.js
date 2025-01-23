@@ -19,35 +19,50 @@ module.exports = {
             res.status(500).json({ error: 'Failed to create task' });
         }
     },
-    getTaskList: async (req, res) => {
+    getAllTasks: async (req, res) => {
         try {
             const userId = req.user
-            console.log('this is the id received', userId)
             const userTasks = await db.Task.findAll({
                 where: { UserId: userId }
             })
-            res.status(200).json({ message: 'Here is your list of tasks', list: userTasks});
+            if (userTasks) res.status(200).json({ message: 'Tasks returned successfully', tasks: userTasks });
+            else res.status(400).json({ message: 'Task not found' });
         } catch (error) {
-            console.error('Error creating task:', error);
-            res.status(500).json({ error: 'Failed to create task' });
+            console.error('Error returning task:', error);
+            res.status(500).json({ error: 'Failed getting tasks' });
         }
     },
-    getTask: async (req, res) => {
+    getTaskById: async (req, res) => {
         try {
-            const userId = req.user
-            const userTasks = db.Task.findAll({
-                where: { UserId: userId }
-            })
-            res.status(201).json({ message: 'Task created successfully', task: newTask });
+            const taskId = req.params.taskId
+            const task = await db.Task.findByPk(taskId)
+            if (task) res.status(200).json({ message: 'Task returned successfully', task: task });
+            else res.status(404).json({ message: 'Task not found' });
         } catch (error) {
-            console.error('Error creating task:', error);
-            res.status(500).json({ error: 'Failed to create task' });
+            console.error('Error getting the task:', error);
+            res.status(500).json({ error: 'Failed getting task' });
         }
     },
-    modifyTask: (req, res) => {
-        res.send('hello modify')
+    modifyTask: async (req, res) => {
+        try {
+            const taskId = req.params.taskId
+            const { title, description, dueDate, status } = req.body
+            const task = await db.Task.findByPk(taskId)
 
+            if (!task) {
+                return res.status(404).json({ message: 'Task not found' });
+            }
+            await task.update({ title: title, description: description, dueDate: dueDate, status: status });
+            res.status(200).json({ message: 'Task updated successfully', task: task });
+        } catch (error) {
+            console.error('Error updating task:', error);
+            res.status(500).json({ error: 'Failed getting the task' });
+        }
+    },
+    deleteTask: (req, res) => {
+        res.send('hello modify')
         //res.render('register');
     },
+
 
 }
