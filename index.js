@@ -13,6 +13,7 @@ const app = express();
 
 // converts request body to JSON, form-data to JSON etc.
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json()); 
 
 // static folders location
 app.use(express.static(publicDir));
