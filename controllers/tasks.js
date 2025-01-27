@@ -36,6 +36,7 @@ module.exports = {
         try {
             const taskId = req.params.taskId
             const task = await db.Task.findByPk(taskId)
+            // Check if task exist
             if (task) res.status(200).json({ message: 'Task returned successfully', task: task });
             else res.status(404).json({ message: 'Task not found' });
         } catch (error) {
@@ -48,20 +49,28 @@ module.exports = {
             const taskId = req.params.taskId
             const { title, description, dueDate, status } = req.body
             const task = await db.Task.findByPk(taskId)
-
-            if (!task) {
-                return res.status(404).json({ message: 'Task not found' });
-            }
+            // Check if task exist
+            if (!task) return res.status(404).json({ message: 'Task not found' });
             await task.update({ title: title, description: description, dueDate: dueDate, status: status });
             res.status(200).json({ message: 'Task updated successfully', task: task });
         } catch (error) {
             console.error('Error updating task:', error);
-            res.status(500).json({ error: 'Failed getting the task' });
+            res.status(500).json({ error: 'Failed modifying the task' });
         }
     },
-    deleteTask: (req, res) => {
-        res.send('hello modify')
-        //res.render('register');
+    deleteTaskById: async (req, res) => {
+        try {
+            const taskId = req.params.taskId
+            // Check if task exist
+            console.log('this is deletion',taskId)
+            const task = await db.Task.findByPk(taskId)
+            if (!task) return res.status(404).json({ message: 'Task not found' });
+            await task.destroy({ id : taskId});
+            res.status(200).json({ message: 'Task deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            res.status(500).json({ error: 'Failed deleting the task' });
+        }
     },
 
 
