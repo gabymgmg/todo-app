@@ -49,8 +49,7 @@ module.exports = {
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_REFRESH_EXPIRATION
       });
-      //req.session.user = { userId: user.id, email: user.email }; // Store essential user data in session
-      res.status(200).json({ token });
+      res.status(200).json({ token })
     } catch (error) {
       console.log(error)
       return res.status(500).send('Sign in error');
