@@ -1,0 +1,16 @@
+body {
+    font-family: 'Montserrat', sans-serif; /* Use your preferred font */
+    background-color: #ffffff;  
+  }
+  
+  .bg-image {
+    background-image: url('background.jpg'); /* Assuming 'background.jpg' is in the 'public' folder */
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .bg-large {
+    background-image: url('largeBackground.jpg'); /* Assuming 'background.jpg' is in the 'public' folder */
+    background-size:cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
