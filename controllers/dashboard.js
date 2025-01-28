@@ -1,5 +1,6 @@
 module.exports = {
     dashboardView: (req, res) => {
-      res.render('dashboard');
+      res.render('dashboard', { user: req.user }); 
+      console.log('this is', req.user)
     }
   }
