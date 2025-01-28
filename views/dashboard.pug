@@ -4,3 +4,5 @@ block content
   .container
     h4 Dashboard
     span Only authenticated users can view this dashboard view.
+    if (user)
+      h4 #{user.name}

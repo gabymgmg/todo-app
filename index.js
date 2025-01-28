@@ -3,10 +3,11 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const dotenv = require('dotenv').config();
 const path = require('path')
-const publicDir = path.join(__dirname, '../public')
+const publicDir = path.join(__dirname, '/public')
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const taskRoutes = require('./routes/tasks');
+const indexRoutes = require('./routes/index');
 const db = require('./models/index');
 // constant to use express methods and middlewares
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 
 // static folders location
 app.use(express.static(publicDir));
+app.use(cookieParser(process.env.COOKIE_SECRET)); // Set cookie secret
 
 // viewing engine has to be set to use pug
 app.set("view engine", "pug");
@@ -24,6 +26,7 @@ app.set("view engine", "pug");
 app.use('/', authRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', taskRoutes);
+app.use('/', indexRoutes);
 
 // database
 db.sequelize.sync({ force: false })
