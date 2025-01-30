@@ -62,7 +62,6 @@ module.exports = {
         try {
             const taskId = req.params.taskId
             // Check if task exist
-            console.log('this is deletion',taskId)
             const task = await db.Task.findByPk(taskId)
             if (!task) return res.status(404).json({ message: 'Task not found' });
             await task.destroy({ id : taskId});
