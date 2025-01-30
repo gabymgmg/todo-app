@@ -11,6 +11,11 @@ module.exports = {
     dialect: "postgres",
     logging: false,
     port: 5433,
+    cookie: {
+      httpOnly: true, // prevents js (client) to read it
+      secure: false, 
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+    }
   },
   production: {
     username: process.env.PGUSER,
@@ -19,7 +24,12 @@ module.exports = {
     host: process.env.PGHOST,
     port: 5433,
     dialect: "postgres",
-    ssl: 'require'
+    ssl: 'require',
+    cookie: {
+      httpOnly: true,
+      secure: true, 
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+    }
   }
 }
 
