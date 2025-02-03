@@ -3,13 +3,13 @@ const db = require('../models/index');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config.js')
 const configDev = config.development
-
+const passport = require('passport')
 module.exports = {
   registerView: (req, res) => {
     res.render('register');
   },
 
-  loginView: (req, res) => {
+  loginView: async (req, res) => {
     res.render('login');
   },
 
@@ -34,49 +34,50 @@ module.exports = {
       return res.status(500).send('Error in registering user');
     }
   },
+  // loginUser: async (req, res) => {
+  //   try {
+  //     passport.authenticate('local', { successRedirect: 'dashboard/?loginsuccess', failureRedirect: '/login' }, (err, user, info) => {
+  //       // if (err) {
+  //       //   return res.status(500).json({ message: 'Authentication error' });
+  //       // }
+  //       // if (!user) {
+  //       //   return res.status(401).json({ message: info.message });
+  //       // }
+  //       // // Generate Access Token (short-lived)
+  //       // const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+  //       //   expiresIn: process.env.JWT_EXPIRATION,
+  //       // });
+  //       // // Generate Refresh Token (long-lived)
+  //       // const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, {
+  //       //   expiresIn: process.env.JWT_REFRESH_EXPIRATION,
+  //       // });
 
-  loginUser: async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      const user = await db.User.findOne({
-        where: { email }
-      });
-      if (!user) {
-        return res.status(404).json('Email not found');
-      }
-      // Verify password
-      const passwordValid = await bcrypt.compare(password, user.password);
-      if (!passwordValid) {
-        return res.status(404).json('Incorrect email and password combination');
-      }
-      // Generate Access Token (short-lived)
-      const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRATION, // e.g., '15m', '1h'
-      });
-
-      // Generate Refresh Token (long-lived)
-      const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, {
-        expiresIn: process.env.JWT_REFRESH_EXPIRATION, // e.g., '7d', '30d'
-      });
-      // Set the refresh token(long-lived) in cookies
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true, // flag to prevent JavaScript from reading it.
-        secure: configDev.cookie.secure, // Set to true in production 
-        maxAge: configDev.cookie.maxAge, // Matches refresh token expiration
-        sameSite: 'strict' // Important to prevent CSRF attacks
-      });
-      // Send Access Token to Client
-      res.status(200).json({ accessToken }); // Send only the access token
-    } catch (error) {
-      console.log(error)
-      return res.status(500).send('Sign in error');
-    }
+  //       // // Set the refresh token(long-lived) in cookies
+  //       // res.cookie('refreshToken', refreshToken, {
+  //       //   httpOnly: true, // flag to prevent JavaScript from reading it.
+  //       //   secure: configDev.cookie.secure, // Set to true in production 
+  //       //   maxAge: configDev.cookie.maxAge, // Matches refresh token expiration
+  //       //   sameSite: 'strict' // Important to prevent CSRF attacks
+  //       // });
+  //       // // Send the access token to client
+  //       // res.redirect('/dashboard')
+  //       // //res.status(200).json({ accessToken });
+  //     })(req, res);
+  //   } catch (error) {
+  //     console.error(error);
+  //     return res.status(500).send('Sign in error');
+  //   }
+  // },
+  loginUser: (req, res) => {
+    passport.authenticate('local', {
+      successRedirect: 'dashboard/?loginsuccess',
+      failureRedirect: '/login?error'
+    })(req, res);
   },
-
   logoutUser: (req, res) => {
     res.redirect('login');
   },
-  
+
   refreshToken: (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
