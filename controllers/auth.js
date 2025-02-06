@@ -34,46 +34,29 @@ module.exports = {
       return res.status(500).send('Error in registering user');
     }
   },
-  // loginUser: async (req, res) => {
-  //   try {
-  //     passport.authenticate('local', { successRedirect: 'dashboard/?loginsuccess', failureRedirect: '/login' }, (err, user, info) => {
-  //       // if (err) {
-  //       //   return res.status(500).json({ message: 'Authentication error' });
-  //       // }
-  //       // if (!user) {
-  //       //   return res.status(401).json({ message: info.message });
-  //       // }
-  //       // // Generate Access Token (short-lived)
-  //       // const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-  //       //   expiresIn: process.env.JWT_EXPIRATION,
-  //       // });
-  //       // // Generate Refresh Token (long-lived)
-  //       // const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, {
-  //       //   expiresIn: process.env.JWT_REFRESH_EXPIRATION,
-  //       // });
 
-  //       // // Set the refresh token(long-lived) in cookies
-  //       // res.cookie('refreshToken', refreshToken, {
-  //       //   httpOnly: true, // flag to prevent JavaScript from reading it.
-  //       //   secure: configDev.cookie.secure, // Set to true in production 
-  //       //   maxAge: configDev.cookie.maxAge, // Matches refresh token expiration
-  //       //   sameSite: 'strict' // Important to prevent CSRF attacks
-  //       // });
-  //       // // Send the access token to client
-  //       // res.redirect('/dashboard')
-  //       // //res.status(200).json({ accessToken });
-  //     })(req, res);
-  //   } catch (error) {
-  //     console.error(error);
-  //     return res.status(500).send('Sign in error');
-  //   }
-  // },
   loginUser: (req, res) => {
-    passport.authenticate('local', {
-      successRedirect: 'dashboard/?loginsuccess',
-      failureRedirect: '/login?error'
+    passport.authenticate('local', { failureRedirect: '/login' }, (err, user, info) => {
+      if (err) {
+        return res.status(500).json({ message: 'Authentication Error' });
+      }
+      if (!user) {
+        return res.status(401).json({ message: 'Invalid Credentials' });
+      }
+      // Generate Access Token (short-lived)
+      const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRATION,
+      });
+      // Generate Refresh Token (long-lived)
+      const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, {
+        expiresIn: process.env.JWT_REFRESH_EXPIRATION,
+      });
+      // Respond with token
+      res.cookie('jwt', accessToken, { httpOnly: true }); // Set JWT as an HTTP-only cookie
+      res.json({ message: 'Login Successful' });
     })(req, res);
   },
+  
   logoutUser: (req, res) => {
     res.redirect('login');
   },
