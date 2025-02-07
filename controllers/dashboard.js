@@ -9,8 +9,6 @@ module.exports = {
   dashboardView: (req, res) => {
     if (req.user) { 
       res.render('dashboard', { name: req.user.name }); 
-    } else {
-      res.render('login')
     }
   }
 }

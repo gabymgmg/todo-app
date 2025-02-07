@@ -14,12 +14,18 @@ loginForm.addEventListener('submit', async (event) => {
         });
         if (response.ok) {
             // Redirect to dashboard immediately after successful login
-            window.location.href = '/dashboard'; 
-          } else {
+            window.location.href = '/dashboard';
+        } else {
             // Handle login errors
-            console.error('Login failed:', response.status);
-            window.href.location = '/login'
-          }
+            const errorData = await response.json();
+            const errorMessage = errorData.message || 'Login failed.';
+
+            // Display the error message
+            const errorMessageElement = document.getElementById('error-message');
+            errorMessageElement.textContent = errorMessage;
+            errorMessageElement.style.display = 'block';
+            console.error('Login failed:', response.status); 
+        }
     } catch (error) {
         console.error('Login error:', error); // Handle errors during the fetch request itself, such as network errors, connection issues,etc.
         alert('An error occurred during login.');
@@ -29,20 +35,20 @@ loginForm.addEventListener('submit', async (event) => {
 const logoutButton = document.getElementById('logoutButton');
 
 logoutButton.addEventListener('click', async () => {
-  try {
-    const response = await fetch('/logout', { 
-      method: 'GET' 
-    });
+    try {
+        const response = await fetch('/logout', {
+            method: 'GET'
+        });
 
-    if (response.ok) {
-      window.location.href = '/login'; 
-    } else {
-      console.error('Logout failed:', response.status);
-      alert('Logout failed.');
+        if (response.ok) {
+            window.location.href = '/login';
+        } else {
+            console.error('Logout failed:', response.status);
+            alert('Logout failed.');
+        }
+
+    } catch (error) {
+        console.error('Logout error:', error);
+        alert('An error occurred during logout.');
     }
-
-  } catch (error) {
-    console.error('Logout error:', error);
-    alert('An error occurred during logout.');
-  }
 });
