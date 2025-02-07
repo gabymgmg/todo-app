@@ -4,6 +4,6 @@ const dashboardController = require('../controllers/dashboard');
 const passport = require('passport')
 const router = express.Router();
 
-router.get('/dashboard',passport.authenticate('jwt', { session: false }), dashboardController.dashboardView);
+router.get('/dashboard', passport.authenticate('jwt', { session: false , failureRedirect: '/login'}), dashboardController.dashboardView);
 
 module.exports = router;
