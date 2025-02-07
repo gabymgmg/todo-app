@@ -18,10 +18,31 @@ loginForm.addEventListener('submit', async (event) => {
           } else {
             // Handle login errors
             console.error('Login failed:', response.status);
-            alert('Login failed. Please check your credentials.');
+            window.href.location = '/login'
           }
     } catch (error) {
         console.error('Login error:', error); // Handle errors during the fetch request itself, such as network errors, connection issues,etc.
         alert('An error occurred during login.');
     }
+});
+
+const logoutButton = document.getElementById('logoutButton');
+
+logoutButton.addEventListener('click', async () => {
+  try {
+    const response = await fetch('/logout', { 
+      method: 'GET' 
+    });
+
+    if (response.ok) {
+      window.location.href = '/login'; 
+    } else {
+      console.error('Logout failed:', response.status);
+      alert('Logout failed.');
+    }
+
+  } catch (error) {
+    console.error('Logout error:', error);
+    alert('An error occurred during logout.');
+  }
 });
