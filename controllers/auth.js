@@ -56,9 +56,12 @@ module.exports = {
       res.json({ message: 'Login Successful' });
     })(req, res);
   },
-  
+
   logoutUser: (req, res) => {
-    res.redirect('login');
+    if (req.cookies.jwt) { 
+      res.clearCookie('jwt'); 
+    }
+    res.status(200).redirect('/login'); 
   },
 
   refreshToken: (req, res) => {
