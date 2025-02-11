@@ -26,7 +26,16 @@ block content
                   tr
                     td #{task.title}
                     td #{task.description}
-                    td #{task.status ? 'Completed' : 'Pending'} 
+                    td
+                      case task.status
+                        when 'todo'
+                          | To Do
+                        when 'in_progress'
+                          | In Progress
+                        when 'completed'
+                          | Completed
+                        default
+                          | To Do
                     td
                       a.btn.btn-sm.btn-primary(href=`/tasks/${task.id}`) Edit
                       button.btn.btn-sm.btn-danger(onclick=`deleteTask(${task.id})`) Delete
@@ -53,9 +62,10 @@ block content
               label.form-label.control-label(for="status") Status
               select#status.form-select(name="status")
                 option(value="completed") Completed
-                option(value="to-do") To Do
+                option(value="todo") To Do
                 option(value="in_progress") In Progress
             .modal-footer
+              #error-message-task.text-danger(style="display:none;") Empty or Invalid Field
               button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Close
               button.btn.btn-primary(type="submit") Create Task
   script(src="/tasks.js")   
