@@ -5,12 +5,13 @@ const jwt = require('jsonwebtoken');
 module.exports = {
     createTask: async (req, res) => {
         try {
-            const { title, description, dueDate } = req.body;
+            const { title, description, dueDate, status } = req.body;
             const userId = req.user.id; // Get user ID from the req since it was populated by the middleware
             const newTask = await db.Task.create({
                 title: title,
                 description: description,
                 dueDate: dueDate,
+                status: status,
                 UserId: userId
             });
             res.status(201).json({ message: 'Task created successfully', task: newTask });
