@@ -6,7 +6,7 @@ module.exports = {
     createTask: async (req, res) => {
         try {
             const { title, description, dueDate } = req.body;
-            const userId = req.user; // Get user ID from the req since it was populated by the middleware
+            const userId = req.user.id; // Get user ID from the req since it was populated by the middleware
             const newTask = await db.Task.create({
                 title: title,
                 description: description,
