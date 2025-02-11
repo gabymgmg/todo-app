@@ -6,8 +6,8 @@ block content
       .col-md-8.offset-md-2
         .card
           .card-header
-            h2.text-center  Tasks
-            .d-flex.justify-content-end
+            h2 Tasks
+            .d-flex.justify-content-end 
               button.btn.btn-primary.me-2(type="button" data-bs-toggle="modal" data-bs-target="#addTaskModal") 
                 i.fas.fa-plus 
                 | Add Task
@@ -21,7 +21,7 @@ block content
                   th Description
                   th Status
                   th Actions
-                  tbody
+              tbody
                 each task in tasks
                   tr
                     td #{task.title}
@@ -30,3 +30,32 @@ block content
                     td
                       a.btn.btn-sm.btn-primary(href=`/tasks/${task.id}`) Edit
                       button.btn.btn-sm.btn-danger(onclick=`deleteTask(${task.id})`) Delete
+
+      // Add Task Modal
+  .modal(id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          h5.modal-title(id="addTaskModalLabel") Add New Task
+          button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+        .modal-body
+          form(id="addTaskForm")
+            .form-group
+              label.form-label.control-label(for="title") Title
+              input#title.form-control(type="text" name="title" placeholder="Enter task title")
+            .form-group
+              label.form-label.control-label(for="description") Description
+              textarea#description.form-control(name="description" rows="3" placeholder="Enter task description")
+            .form-group 
+              label.form-label.control-label(for="dueDate") Due Date
+              input#dueDate.form-control(type="date" name="dueDate") 
+            .form-group
+              label.form-label.control-label(for="status") Status
+              select#status.form-select(name="status")
+                option(value="completed") Completed
+                option(value="to-do") To Do
+                option(value="in_progress") In Progress
+            .modal-footer
+              button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Close
+              button.btn.btn-primary(type="submit") Create Task
+  script(src="/tasks.js")   
