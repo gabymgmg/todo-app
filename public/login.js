@@ -5,7 +5,6 @@ loginForm.addEventListener('submit', async (event) => {
 
     const formData = new FormData(loginForm);
     const data = Object.fromEntries(formData);
-    console.log(data)
     try {
         const response = await fetch('/login', {
             method: 'POST',
