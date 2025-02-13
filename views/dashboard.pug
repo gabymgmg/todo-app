@@ -37,7 +37,7 @@ block content
                         default
                           | To Do
                     td
-                      a.btn.btn-sm.btn-primary(href=`/tasks/${task.id}`) Edit
+                      button.btn.btn-sm.btn-primary(type="button" data-bs-toggle="modal" data-bs-target="#editTaskModal" data-task-id=`${task.id}`) Edit 
                       button.btn.btn-sm.btn-danger(onclick=`deleteTask(${task.id})`) Delete
 
       // Add Task Modal
@@ -68,4 +68,34 @@ block content
               #error-message-task.text-danger(style="display:none;") Empty or Invalid Field
               button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Close
               button.btn.btn-primary(type="submit") Create Task
+  
+  //edit task
+  .modal(id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          h5.modal-title(id="editTaskModalLabel") Edit Task
+          button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+        .modal-body
+          form(id="ediTaskForm")
+            .form-group
+              label.form-label.control-label(for="title") Title
+              input#title.form-control(type="text" name="title")
+            .form-group
+              label.form-label.control-label(for="description") Description
+              textarea#description.form-control(name="description" rows="3")
+            .form-group 
+              label.form-label.control-label(for="dueDate") Due Date
+              input#dueDate.form-control(type="date" name="dueDate") 
+            .form-group
+              label.form-label.control-label(for="status") Status
+              select#status.form-select(name="status")
+                option(value="completed") Completed
+                option(value="todo") To Do
+                option(value="in_progress") In Progress
+            .modal-footer
+              #error-message-task.text-danger(style="display:none;") Empty or Invalid Field
+              button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Close
+              button.btn.btn-primary(type="submit") Save Changes
+
   script(src="/tasks.js")   

@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const db = require('../models/index');
 const jwt = require('jsonwebtoken');
+const { Op } = require('sequelize'); 
+
 
 module.exports = {
     createTask: async (req, res) => {
