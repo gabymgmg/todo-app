@@ -37,7 +37,7 @@ block content
                         default
                           | To Do
                     td
-                      button.btn.btn-sm.btn-primary(type="button" data-bs-toggle="modal" data-bs-target="#editTaskModal" data-task-id=`${task.id}`) Edit 
+                      button.btn.btn-sm.btn-primary.btn-edit(type="button" data-bs-toggle="modal" data-bs-target="#editTaskModal" data-task-id=`${task.id}`) Edit 
                       button.btn.btn-sm.btn-danger(onclick=`deleteTask(${task.id})`) Delete
 
       // Add Task Modal
