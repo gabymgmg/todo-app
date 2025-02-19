@@ -53,42 +53,6 @@ function deleteTask(taskId) {
   }
 }
 
-// Add click event listener to the edit buttons
-const editButtons = document.querySelectorAll('.btn-edit');
-editButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const taskId = button.getAttribute('data-task-id');
-
-    // Fetch task details from the server
-    fetch(`/tasks/${taskId}`, { 
-      method: 'GET'
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(taskData => {
-        // Populate the edit form with task data
-        const data = taskData.task
-        console.log(document.getElementById('title'))
-        document.getElementById('title').value = data.title;
-        document.getElementById('description').value = data.description;
-        document.getElementById('dueDate').value = data.dueDate;
-        document.getElementById('status').value = data.status;
-        //editTaskForm.setAttribute('action', `/tasks/${taskId}`); // Set the action attribute for PUT request
-
-        // Show the edit modal
-        editTaskModal.show();
-      })
-      .catch(error => {
-        console.error('Error fetching task data:', error);
-        // Handle error gracefully (e.g., display an error message)
-      });
-  });
-});
-
 editTaskForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
@@ -107,8 +71,9 @@ editTaskForm.addEventListener('submit', async (event) => {
 
     // Handle successful task update (e.g., close modal, refresh page)
     editTaskModal.hide();
-    // Refresh the task list (replace with your actual logic)
-    location.reload(); 
+    // Refresh the task list 
+    const updatedTask = await response.json(); // Get the updated task from the server's response
+    updateTaskInTable(updatedTask); // Call the function to update the table row
 
   } catch (error) {
     console.error('Error updating task:', error);
@@ -116,3 +81,30 @@ editTaskForm.addEventListener('submit', async (event) => {
     errorMessageElement.style.display = 'block'
   }
 })
+
+async function editTask (taskId){
+  try {
+    const response = await fetch(`/tasks/${taskId}`); // Fetch with await
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`); // Handle errors
+    }
+    const taskObj = await response.json(); // Parse JSON with await
+    const task = taskObj.task
+    console.log(task.dueDate)
+    //Populate the edit modal
+    const editTitleInput = document.getElementById('editTitle');
+    const editDescriptionInput = document.getElementById('editDescription');
+    const editStatusSelect = document.getElementById('editStatus');
+    //const editDueDate = document.getElementById('editDueDate');
+
+    editTitleInput.value = task.title
+    editDescriptionInput.value = task.description;
+    editStatusSelect.value = task.status;
+    //editDueDate.value = task.dueDate;
+    editTaskModal.show();
+    
+  }
+  catch(error){
+    console.error("One or more edit modal elements not found!", error);
+  }
+}
