@@ -14,14 +14,14 @@ block content
               button.btn.btn-secondary(type="button") Filter 
 
           .card-body
-            table.table.mt-3
+            table.table.mt-3s
               thead
                 tr
                   th Title
                   th Description
                   th Status
                   th Actions
-              tbody
+              tbody#tasksContainer
                 each task in tasks
                   tr
                     td #{task.title}
@@ -37,7 +37,7 @@ block content
                         default
                           | To Do
                     td
-                      button.btn.btn-sm.btn-primary.btn-edit(type="button" data-bs-toggle="modal" data-bs-target="#editTaskModal" data-task-id=`${task.id}`) Edit 
+                      button.btn.btn-sm.btn-primary.btn-edit(type="button" data-bs-toggle="modal" data-bs-target="#editTaskModal" data-task-id=`${task.id}` onclick=`editTask(${task.id})`) Edit 
                       button.btn.btn-sm.btn-danger(onclick=`deleteTask(${task.id})`) Delete
 
       // Add Task Modal
@@ -79,17 +79,17 @@ block content
         .modal-body
           form(id="ediTaskForm")
             .form-group
-              label.form-label.control-label(for="title") Title
-              input#title.form-control(type="text" name="title")
+              label.form-label.control-label(for="editTitle") Title
+              input#editTitle.form-control(type="text" name="title")
             .form-group
-              label.form-label.control-label(for="description") Description
-              textarea#description.form-control(name="description" rows="3")
+              label.form-label.control-label(for="editDescription") Description
+              textarea#editDescription.form-control(name="description" rows="3")
             .form-group 
-              label.form-label.control-label(for="dueDate") Due Date
-              input#dueDate.form-control(type="date" name="dueDate") 
+              label.form-label.control-label(for="editDueDate") Due Date
+              input#editDueDate.form-control(type="date" name="dueDate") 
             .form-group
-              label.form-label.control-label(for="status") Status
-              select#status.form-select(name="status")
+              label.form-label.control-label(for="editStatus") Status
+              select#editStatus.form-select(name="status")
                 option(value="completed") Completed
                 option(value="todo") To Do
                 option(value="in_progress") In Progress
