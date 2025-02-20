@@ -23,10 +23,10 @@ block content
                   th Actions
               tbody#tasksContainer
                 each task in tasks
-                  tr
-                    td #{task.title}
-                    td #{task.description}
-                    td
+                  tr(data-task-id=task.id)
+                    td.task-title #{task.title}  
+                    td.task-description #{task.description} 
+                    td.task-status 
                       case task.status
                         when 'todo'
                           | To Do
@@ -77,7 +77,7 @@ block content
           h5.modal-title(id="editTaskModalLabel") Edit Task
           button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
         .modal-body
-          form(id="ediTaskForm")
+          form(id="editTaskForm")
             .form-group
               label.form-label.control-label(for="editTitle") Title
               input#editTitle.form-control(type="text" name="title")
