@@ -4,7 +4,12 @@ const addTaskForm = document.getElementById('addTaskForm');
 const editTaskModal = new bootstrap.Modal(document.getElementById('editTaskModal'));
 const editTaskForm = document.getElementById('editTaskForm');
 
-
+// Status display
+const statusDisplay = {
+  todo: 'To Do',
+  in_progress: 'In Progress',
+  completed: 'Completed'
+}
 
 addTaskForm.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -20,7 +25,9 @@ addTaskForm.addEventListener('submit', async (event) => {
 
     if (response.ok) {
       myModal.hide();
-      location.reload();
+      // Update the task table
+      const updatedTask = (await response.json()).task; // Get the updated task from the server's response
+      updateTaskInTable(updatedTask)
     } else {
       // Handle task creation errors
       const errorData = await response.json();
@@ -57,22 +64,23 @@ editTaskForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   try {
-    const taskId = editTaskForm.getAttribute('data-task-id'); 
+    const taskId = editTaskForm.dataset.taskId; // Get from the form
     const formData = new FormData(editTaskForm);
-    const response = await fetch(`/tasks/${taskId}`, { 
+    const response = await fetch(`/tasks/${taskId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(Object.fromEntries(formData))
     });
 
     if (!response.ok) {
-      throw new Error('Network response was not ok'); 
+      throw new Error('Network response was not ok');
     }
-
-    // Handle successful task update (e.g., close modal, refresh page)
+    // Handle successful task update 
     editTaskModal.hide();
-    // Refresh the task list 
-    const updatedTask = await response.json(); // Get the updated task from the server's response
+    // Update the task list 
+    const updatedTask = (await response.json()).task; // Get the updated task from the server's response
+    // add the status
+    console.log(updatedTask)
     updateTaskInTable(updatedTask); // Call the function to update the table row
 
   } catch (error) {
@@ -82,29 +90,58 @@ editTaskForm.addEventListener('submit', async (event) => {
   }
 })
 
-async function editTask (taskId){
+async function editTask(taskId) {
   try {
-    const response = await fetch(`/tasks/${taskId}`); // Fetch with await
+    const response = await fetch(`/tasks/${taskId}`); // Fetch the list tasks
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`); // Handle errors
     }
     const taskObj = await response.json(); // Parse JSON with await
-    const task = taskObj.task
-    console.log(task.dueDate)
-    //Populate the edit modal
+    const task = taskObj.task // The response comes with message and task
+    // Get the elements from the edit modal
     const editTitleInput = document.getElementById('editTitle');
     const editDescriptionInput = document.getElementById('editDescription');
     const editStatusSelect = document.getElementById('editStatus');
-    //const editDueDate = document.getElementById('editDueDate');
+    const editDueDate = document.getElementById('editDueDate');
 
+    //Populate the edit modal
     editTitleInput.value = task.title
     editDescriptionInput.value = task.description;
     editStatusSelect.value = task.status;
-    //editDueDate.value = task.dueDate;
+    editDueDate.value = formatDateForInput(task.dueDate);
+    editTaskForm.dataset.taskId = taskId; // Set it on the form
     editTaskModal.show();
-    
   }
-  catch(error){
+  catch (error) {
     console.error("One or more edit modal elements not found!", error);
+  }
+}
+
+async function updateTaskInTable(updatedTask) {
+  const row = document.querySelector(`tr[data-task-id="${updatedTask.id}"]`);
+
+  if (row) {
+    const titleCell = row.querySelector('.task-title');
+    const descriptionCell = row.querySelector('.task-description');
+    const statusCell = row.querySelector('.task-status');
+    titleCell.textContent = updatedTask.title;
+    descriptionCell.textContent = updatedTask.description;
+    statusCell.textContent = statusDisplay[updatedTask.status]
+
+  } else {
+    console.error("Row not found for updated task:", updatedTask.id);
+  }
+}
+
+function formatDateForInput(dateString) {
+  if (!dateString) {
+    return "";
+  }
+  try {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return dateString; // Return original string if formatting fails
   }
 }
