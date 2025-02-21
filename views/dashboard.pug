@@ -6,13 +6,19 @@ block content
       .col-md-8.offset-md-2
         .card
           .card-header
-            h2 Tasks
-            .d-flex.justify-content-end 
-              button.btn.btn-primary.me-2(type="button" data-bs-toggle="modal" data-bs-target="#addTaskModal") 
-                i.fas.fa-plus 
-                | Add Task
-              button.btn.btn-secondary(type="button") Filter 
-
+            h2.mb-4 Tasks
+            .d-flex.justify-content-between 
+              div 
+                button.btn.btn-primary(type="button" data-bs-toggle="modal" data-bs-target="#addTaskModal")
+                  i.fas.fa-plus
+                  | Add Task
+              div.d-flex 
+                input(type="text", id="search", placeholder="Search tasks...", class="me-2") 
+                select#statusFilter.form-select(name="status")
+                  option(value="") All Statuses
+                  option(value="completed") Completed
+                  option(value="todo") To Do
+                  option(value="in_progress") In Progress
           .card-body
             table.table.mt-3s
               thead
@@ -22,23 +28,8 @@ block content
                   th Status
                   th Actions
               tbody#tasksContainer
-                each task in tasks
-                  tr(data-task-id=task.id)
-                    td.task-title #{task.title}  
-                    td.task-description #{task.description} 
-                    td.task-status 
-                      case task.status
-                        when 'todo'
-                          | To Do
-                        when 'in_progress'
-                          | In Progress
-                        when 'completed'
-                          | Completed
-                        default
-                          | To Do
-                    td
-                      button.btn.btn-sm.btn-primary.btn-edit(type="button" data-bs-toggle="modal" data-bs-target="#editTaskModal" data-task-id=`${task.id}` onclick=`editTask(${task.id})`) Edit 
-                      button.btn.btn-sm.btn-danger(onclick=`deleteTask(${task.id})`) Delete
+            nav(aria-label="Page navigation") 
+              ul.pagination#pagination
 
       // Add Task Modal
   .modal(id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true")

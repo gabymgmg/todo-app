@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const db = require('../models/index');
 const jwt = require('jsonwebtoken');
-const { Op } = require('sequelize'); 
+const { Op } = require('sequelize');
 
 
 module.exports = {
@@ -24,11 +24,33 @@ module.exports = {
     },
     getAllTasks: async (req, res) => {
         try {
-            const userId = req.user
-            const userTasks = await db.Task.findAll({
-                where: { UserId: userId }
+            // Get params if any, in order to filter according to needs
+            const userId = req.user.id
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const offset = (page - 1) * limit;
+            const search = req.query.search || '';
+            const status = req.query.status;
+            const whereClause = { UserId: userId };
+            // If user makes a search
+            if (search) whereClause.title = { [Op.like]: `%${search}%` };
+            if (status) whereClause.status = status;
+            // Search in db according to needs
+            const tasks = await db.Task.findAndCountAll({
+                where: whereClause,
+                limit: limit,
+                offset: offset,
+                order: [['createdAt', 'DESC']]
             })
-            if (userTasks) res.status(200).json({ message: 'Tasks returned successfully', tasks: userTasks });
+            if (tasks) {
+                res.status(200).json({
+                    message: 'Tasks returned successfully',
+                    tasks: tasks.rows, 
+                    totalCount: tasks.count, 
+                    totalPages: Math.ceil(tasks.count / limit), // Calculate total pages
+                    currentPage: page // Send current page
+                });
+            }
             else res.status(400).json({ message: 'Task not found' });
         } catch (error) {
             console.error('Error returning task:', error);
@@ -67,7 +89,7 @@ module.exports = {
             // Check if task exist
             const task = await db.Task.findByPk(taskId)
             if (!task) return res.status(404).json({ message: 'Task not found' });
-            await task.destroy({ id : taskId});
+            await task.destroy({ id: taskId });
             res.status(200).json({ message: 'Task deleted successfully' });
         } catch (error) {
             console.error('Error deleting task:', error);
