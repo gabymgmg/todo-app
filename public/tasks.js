@@ -69,7 +69,7 @@ async function fetchTasks(page = 1) {
     // Get tasks with params if any
     const response = await fetch(`/tasks?page=${page}&limit=${tasksPerPage}&search=${searchTerm}&status=${currentStatus}`);
     const data = await response.json();
-    if(!data){
+    if (!data) {
       throw new Error('Problems with parsing response'); // Handle errors
     }
     const tasks = data.tasks; // Since the response comes with diff properties
@@ -271,4 +271,28 @@ addTaskModal.addEventListener('hidden.bs.modal', () => {
   const errorMessageElement = document.getElementById('error-message-task');
   errorMessageElement.textContent = "";
   errorMessageElement.style.display = 'none';
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const tasksContainer = document.getElementById('tasksContainer');
+  const descriptionModal = new bootstrap.Modal(document.getElementById('descriptionModal'));
+  const descriptionModalBody = document.getElementById('descriptionModalBody');
+  const descriptionModalLabel = document.getElementById('descriptionModalLabel');
+
+  if (tasksContainer) {
+    tasksContainer.addEventListener('click', (event) => {
+      const target = event.target;
+      const row = target.closest('tr');
+
+      if (target && target.classList.contains('task-description')) {
+        const titleCell = row.querySelector('.task-title'); // Get the title cell
+        if (titleCell) {
+          const title = titleCell.textContent; // Get the text content of the title cell
+          descriptionModalBody.textContent = target.textContent;
+          descriptionModalLabel.textContent = title;
+          descriptionModal.show();
+        }
+      }
+    });
+  }
 });
