@@ -52,8 +52,8 @@ block content
             .form-group
               label.form-label.control-label(for="status") Status
               select#status.form-select(name="status")
-                option(value="completed") Completed
                 option(value="todo") To Do
+                option(value="completed") Completed
                 option(value="in_progress") In Progress
             .modal-footer
               #error-message-task.text-danger(style="display:none;") Empty or Invalid Field
@@ -88,5 +88,15 @@ block content
               #error-message-task.text-danger(style="display:none;") Empty or Invalid Field
               button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Close
               button.btn.btn-primary(type="submit") Save Changes
-
+    // Modal for displaying full description
+  .div.modal.fade#descriptionModal(tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true")
+    .modal-dialog.modal-dialog-scrollable
+      .modal-content
+        .modal-header
+          h5.modal-title#descriptionModalLabel Task Description
+          button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+        .modal-body#descriptionModalBody
+           // Full description will be inserted here
+        .modal-footer
+          button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Close
   script(src="/tasks.js")   
