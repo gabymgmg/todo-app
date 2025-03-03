@@ -1,16 +1,30 @@
 body {
-    font-family: 'Montserrat', sans-serif; /* Use your preferred font */
-    background-color: #ffffff;  
-  }
-  
-  .bg-image {
-    background-image: url('background.jpg'); /* Assuming 'background.jpg' is in the 'public' folder */
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-  .bg-large {
-    background-image: url('largeBackground.jpg'); /* Assuming 'background.jpg' is in the 'public' folder */
-    background-size:cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
+  font-family: 'Montserrat', sans-serif;
+  background-color: #ffffff;
+}
+
+.bg-image {
+  background-image: url('background.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-large {
+  background-image: url('largeBackground.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.task-title,
+.task-description,
+.task-status {
+  max-width: 200px;
+  white-space: nowrap;
+  /* Prevent text wrapping */
+  overflow: hidden;
+  /* Hide overflowing content */
+  text-overflow: ellipsis;
+  /* Show ellipsis (...) for truncated text */
+}
+
