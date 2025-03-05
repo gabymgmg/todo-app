@@ -10,7 +10,6 @@ const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const taskRoutes = require('./routes/tasks');
 const indexRoutes = require('./routes/index');
-const db = require('./models/index');
 const passport = require('passport')
 const session = require('express-session');
 const { init: initAuth } = require('./passport');
@@ -42,8 +41,13 @@ app.use('/', dashboardRoutes);
 app.use('/', taskRoutes);
 app.use('/', indexRoutes);
 
-
 // database
+let db;
+if (process.env.NODE_ENV === 'test') {
+    db = require('./models/index.mock');
+  } else {
+    db = require('./models/index');
+  }
 db.sequelize.sync({ force: false })
     .then(() => {
         console.log('Database synced successfully.');
@@ -56,4 +60,5 @@ db.sequelize.sync({ force: false })
         app.listen(process.env.PORT, console.log('Server is running on port: ' + process.env.PORT));
     });
 
+module.exports = app
 

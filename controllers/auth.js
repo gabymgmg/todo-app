@@ -1,9 +1,15 @@
 const bcrypt = require('bcryptjs');
-const db = require('../models/index');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config.js')
 const configDev = config.development
 const passport = require('passport')
+let db;
+if (process.env.NODE_ENV === 'test') {
+  db = require('../models/index.mock');
+} else {
+  db = require('./models/index');
+}
+
 module.exports = {
   registerView: (req, res) => {
     res.render('register');
@@ -58,10 +64,10 @@ module.exports = {
   },
 
   logoutUser: (req, res) => {
-    if (req.cookies.jwt) { 
-      res.clearCookie('jwt'); 
+    if (req.cookies.jwt) {
+      res.clearCookie('jwt');
     }
-    res.status(200).redirect('/login'); 
+    res.status(200).redirect('/login');
   },
 
   refreshToken: (req, res) => {
