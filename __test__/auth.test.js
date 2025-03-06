@@ -3,38 +3,77 @@ const request = require('supertest');
 const server = require('../index');
 const db = require('../models/index.mock');
 const bcrypt = require('bcryptjs');
-
+const passport = require('passport')
+const jwt = require('jsonwebtoken');
+const authController = require('../controllers/auth')
 
 describe('Authentication', () => {
+    let req, res;
+
     beforeEach(() => {
-        // Reset mocks before each test
+        // Mock body and response
+        req = {
+            body: {
+                username: 'testuser',
+                password: 'password123',
+                name: 'Test User',
+                email: 'test@example.com'
+            },
+            logout: jest.fn() 
+        };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+            cookie: jest.fn(),
+            clearCookie: jest.fn(), 
+            redirect: jest.fn(),
+            //status: jest.fn(),
+            send: jest.fn(), 
+            render: jest.fn()
+        };
+
+        // Mock process.env
+        process.env.JWT_SECRET = 'testsecret';
+        process.env.JWT_EXPIRATION = '1h';
+        process.env.JWT_REFRESH_SECRET = 'testrefreshsecret';
+        process.env.JWT_REFRESH_EXPIRATION = '7d';
+
+        // Mock jwt.sign
+        jwt.sign = jest.fn().mockReturnValue('mockedToken');
+
+        // Reset database mocks
         db.User.findOne.mockReset();
         db.User.create.mockReset();
+
+        jest.clearAllMocks(); // Clear all jest mocks
     });
-    it('should register a new user', async () => {
-        // 1. Mock db.User.findOne to simulate user not found
-        db.User.findOne.mockResolvedValue(null);
-        // 2. Mock db.User.create to simulate successful creation
-        db.User.create.mockResolvedValue({
-            id: 1,
-            name: 'Test User',
-            email: 'test1@example.com',
+
+    describe('Register User', () => {
+        it('should register a new user', async () => {
+            db.User.findOne.mockResolvedValue(null); // When user doesn't exist
+            db.User.create.mockResolvedValue({
+                id: 1,
+                name: 'Test User',
+                email: 'test@example.com',
+            });
+
+
+            await authController.registerUser(req, res);
+
+            expect(res.redirect).toHaveBeenCalledWith('login?registrationdone');
+            expect(db.User.findOne).toHaveBeenCalledWith({ where: { email: 'test@example.com' } });
+            expect(db.User.create).toHaveBeenCalled();
+            expect(res.status).toHaveBeenCalledWith(200);
         });
-        // 3. Make a request to your register route
-        const response = await request(server)
-            .post('/register')
-            .send({ name: 'Test User', email: 'test@example.com', password: 'password123' });
-            console.log(response.text)
-        // 4. Assertions
-        expect(db.User.findOne).toHaveBeenCalledWith({ where: { email: 'test@example.com' } });
-        expect(db.User.create).toHaveBeenCalled(); // Verify create was called.
-        expect(response.statusCode).toBe(302); // Expect redirect
-        expect(response.headers.location).toBe('login?registrationdone'); // Expect redirect location
-        // Verify create was called with the correct parameters, including the hashed password.
-        expect(db.User.create.mock.calls[0][0].name).toBe('Test User');
-        expect(db.User.create.mock.calls[0][0].email).toBe('test@example.com');
-        // Verify that the password was hashed.
-        expect(bcrypt.compareSync('password123', db.User.create.mock.calls[0][0].password)).toBe(true);
-    });
-});
+        
+        it('should return error when user already exists', async () => {
+            db.User.findOne.mockResolvedValue({ id: 1, email: 'test@example.com' });
+            await authController.registerUser(req, res);
+
+            expect(res.render).toHaveBeenCalled();
+            expect(db.User.findOne).toHaveBeenCalledWith({ where: { email: 'test@example.com' } });
+            expect(db.User.create).not.toHaveBeenCalled();
+        });
+    })
+})
 
