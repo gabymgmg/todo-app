@@ -69,6 +69,9 @@ module.exports = {
     if (req.cookies.jwt) {
       res.clearCookie('jwt');
     }
+    if (req.cookies.refreshToken) {
+      res.clearCookie('refreshToken');
+    }
     res.status(200).redirect('/login');
   },
 
