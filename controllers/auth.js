@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/config.js')
 const configDev = config.development
 const passport = require('passport')
+const messages = require('../utils/messajes.js')
 let db;
 if (process.env.NODE_ENV === 'test') {
   db = require('../models/index.mock');
@@ -23,11 +24,11 @@ module.exports = {
     try {
       const { name, email, password } = req.body;
       if (!name || !email || !password) {
-        return res.render('register', { error: 'Please fill all fields' });
+        return res.render('register', { error: messages.PLEASE_FILL_ALL_FIELDS });
       }
       // check if user exists
       if (await db.User.findOne({ where: { email } })) {
-        return res.render('register', { error: 'A user account already exists with this email' });
+        return res.render('register', { error: messages.USER_ALREADY_EXISTS});
       }
       // create the user
       await db.User.create({ name, email, password: bcrypt.hashSync(password, 8) });
@@ -37,17 +38,17 @@ module.exports = {
     }
     catch (error) {
       console.log(error)
-      return res.status(500).send('Error in registering user');
+      return res.status(500).send(messages.REGISTRATION_ERROR);
     }
   },
 
   loginUser: (req, res) => {
     passport.authenticate('local', { failureRedirect: '/login' }, (err, user, info) => {
       if (err) {
-        return res.status(500).json({ message: 'Authentication Error' });
+        return res.status(500).json({ message: messages.AUTHENTICATION_ERROR });
       }
       if (!user) {
-        return res.status(401).json({ message: 'Invalid Credentials' });
+        return res.status(401).json({ message: messages.INVALID_CREDENTIALS});
       }
       // Generate Access Token (short-lived)
       const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -59,7 +60,7 @@ module.exports = {
       });
       // Respond with token
       res.cookie('jwt', accessToken, { httpOnly: true }); // Set JWT as an HTTP-only cookie
-      res.json({ message: 'Login Successful' });
+      res.json({ message: messages.LOGIN_SUCCESS});
     })(req, res);
   },
 
