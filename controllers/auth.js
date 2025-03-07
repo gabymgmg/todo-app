@@ -60,6 +60,7 @@ module.exports = {
       });
       // Respond with token
       res.cookie('jwt', accessToken, { httpOnly: true }); // Set JWT as an HTTP-only cookie
+      res.cookie('refreshToken', refreshToken, { httpOnly: true }); // Send the refresh token as a cookie
       res.json({ message: messages.LOGIN_SUCCESS});
     })(req, res);
   },
