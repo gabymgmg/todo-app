@@ -4,6 +4,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const db = require('./models/index');
 const LocalStrategy = require('passport-local');
 const bcrypt = require('bcryptjs');
+const messages =  require('./utils/messages')
 
 const options = {
     jwtFromRequest: ExtractJwt.fromExtractors([(req) => req.cookies.jwt]), // Extract it from the cookies
@@ -15,11 +16,11 @@ module.exports = {
             try {
                 const user = await db.User.findOne({ where: { email } });
                 if (!user) {
-                    return done(null, false, { message: 'User not found' });
+                    return done(null, false, { message: messages.USER_NOT_FOUND});
                 }
                 const isMatch = await bcrypt.compare(password, user.password);
                 if (!isMatch) {
-                    return done(null, false, { message: 'Incorrect password' });
+                    return done(null, false, { message: messages.INCORRECT_PASSWORD});
                 }
                 return done(null, user);
             } catch (error) {
