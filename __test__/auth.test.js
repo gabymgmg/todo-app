@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport')
 const jwt = require('jsonwebtoken');
 const authController = require('../controllers/auth')
-const messages =  require('../utils/messajes')
+const messages = require('../utils/messajes')
 
 describe('Authentication', () => {
     let req, res;
@@ -20,7 +20,10 @@ describe('Authentication', () => {
                 name: 'Test User',
                 email: 'test@example.com'
             },
-            logout: jest.fn()
+            logout: jest.fn(),
+            cookies: { // Mock req.cookies
+                jwt: 'someToken' // Dummy jwt token
+              }
         };
         res = {
             status: jest.fn().mockReturnThis(), // makes res.status return the res object itself
@@ -80,8 +83,8 @@ describe('Authentication', () => {
         it('should successfully log in a user', () => {
             passport.authenticate = jest.fn().mockImplementation((strategy, options, callback) => {
                 callback(null, { id: 123 }, null);
-                return (req, res) => {}; // Returning an empty middleware 
-              });
+                return (req, res) => { }; // Returning an empty middleware 
+            });
 
             authController.loginUser(req, res);
 
@@ -100,7 +103,7 @@ describe('Authentication', () => {
             authController.loginUser(req, res);
 
             expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({ message: messages.INVALID_CREDENTIALS});
+            expect(res.json).toHaveBeenCalledWith({ message: messages.INVALID_CREDENTIALS });
         });
 
         it('should return 500 for authentication error', () => {
@@ -114,7 +117,16 @@ describe('Authentication', () => {
             expect(res.status).toHaveBeenCalledWith(500);
             expect(res.json).toHaveBeenCalledWith({ message: messages.AUTHENTICATION_ERROR });
         });
+    })
 
+    describe('Logout User', () => {
+        it('should successfully log out a user', () => {
+            authController.logoutUser(req, res);
+
+            expect(res.clearCookie).toHaveBeenCalledWith('jwt');
+            expect(res.status).toHaveBeenCalledWith(200)
+            expect(res.redirect).toHaveBeenCalledWith('/login')
+        });
     })
 })
 
