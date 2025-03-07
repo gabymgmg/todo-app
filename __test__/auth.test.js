@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport')
 const jwt = require('jsonwebtoken');
 const authController = require('../controllers/auth')
+const messages =  require('../utils/messajes')
 
 describe('Authentication', () => {
     let req, res;
@@ -19,16 +20,15 @@ describe('Authentication', () => {
                 name: 'Test User',
                 email: 'test@example.com'
             },
-            logout: jest.fn() 
+            logout: jest.fn()
         };
         res = {
-            status: jest.fn().mockReturnThis(),
+            status: jest.fn().mockReturnThis(), // makes res.status return the res object itself
             json: jest.fn(),
             cookie: jest.fn(),
-            clearCookie: jest.fn(), 
+            clearCookie: jest.fn(),
             redirect: jest.fn(),
-            //status: jest.fn(),
-            send: jest.fn(), 
+            send: jest.fn(),
             render: jest.fn()
         };
 
@@ -65,7 +65,7 @@ describe('Authentication', () => {
             expect(db.User.create).toHaveBeenCalled();
             expect(res.status).toHaveBeenCalledWith(200);
         });
-        
+
         it('should return error when user already exists', async () => {
             db.User.findOne.mockResolvedValue({ id: 1, email: 'test@example.com' });
             await authController.registerUser(req, res);
@@ -74,6 +74,47 @@ describe('Authentication', () => {
             expect(db.User.findOne).toHaveBeenCalledWith({ where: { email: 'test@example.com' } });
             expect(db.User.create).not.toHaveBeenCalled();
         });
+    })
+
+    describe('Login User', () => {
+        it('should successfully log in a user', () => {
+            passport.authenticate = jest.fn().mockImplementation((strategy, options, callback) => {
+                callback(null, { id: 123 }, null);
+                return (req, res) => {}; // Returning an empty middleware 
+              });
+
+            authController.loginUser(req, res);
+
+            expect(passport.authenticate).toHaveBeenCalled();
+            expect(jwt.sign).toHaveBeenCalledTimes(2);
+            expect(res.cookie).toHaveBeenCalledWith('jwt', 'mockedToken', { httpOnly: true });
+            expect(res.json).toHaveBeenCalledWith({ message: messages.LOGIN_SUCCESS });
+        });
+
+        it('should return 401 for invalid credentials', () => {
+            passport.authenticate = jest.fn().mockImplementation((strategy, options, callback) => {
+                callback(null, null, { message: messages.INVALID_CREDENTIALS });
+                return (req, res) => { };
+            });
+
+            authController.loginUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(res.json).toHaveBeenCalledWith({ message: messages.INVALID_CREDENTIALS});
+        });
+
+        it('should return 500 for authentication error', () => {
+            passport.authenticate = jest.fn().mockImplementation((strategy, options, callback) => {
+                callback(new Error('Authentication Error'), null, null); // Simulates the error objs
+                return (req, res) => { };
+            });
+
+            authController.loginUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ message: messages.AUTHENTICATION_ERROR });
+        });
+
     })
 })
 
