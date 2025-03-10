@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/config.js')
 const configDev = config.development
 const passport = require('passport')
-const messages = require('../utils/messajes.js')
+const messages = require('../utils/messages.js')
 let db;
 if (process.env.NODE_ENV === 'test') {
   db = require('../models/index.mock');
