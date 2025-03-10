@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport')
 const jwt = require('jsonwebtoken');
 const authController = require('../controllers/auth')
-const messages = require('../utils/messajes')
+const messages = require('../utils/messages')
 
 describe('Authentication', () => {
     let req, res;
