@@ -7,10 +7,10 @@ module.exports = {
     username: process.env.DBUSER,
     password: process.env.DBPASSWORD,
     database: process.env.PGDATABASE,
-    host: process.env.PGHOST,
+    host: process.env.DBHOST,
     dialect: "postgres",
     logging: false,
-    port: 5433,
+    port: 5432,
     cookie: {
       httpOnly: true, // prevents js (client) to read it
       secure: false, 
@@ -18,11 +18,11 @@ module.exports = {
     }
   },
   production: {
-    username: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
+    username: process.env.DBUSER,
+    password: process.env.DBPASSWORD,
     database: process.env.PGDATABASE,
-    host: process.env.PGHOST,
-    port: 5433,
+    host: process.env.DBHOST,
+    port: 5432,
     dialect: "postgres",
     ssl: 'require',
     cookie: {
