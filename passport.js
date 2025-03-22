@@ -20,6 +20,7 @@ module.exports = {
                 }
                 const isMatch = await bcrypt.compare(password, user.password);
                 if (!isMatch) {
+                    console.log(`Incorrect password for email: ${email}`); // Log incorrect password
                     return done(null, false, { message: messages.INCORRECT_PASSWORD});
                 }
                 return done(null, user);
