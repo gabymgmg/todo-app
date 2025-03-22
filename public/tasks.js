@@ -50,12 +50,15 @@ function updateExistingRow(row, updatedTask) {
 function updateTaskInTable(updatedTask) {
   const row = document.querySelector(`tr[data-task-id="${updatedTask.id}"]`);
   const tasksContainer = document.getElementById('tasksContainer');
-
+  const noTasksMessage = tasksContainer.querySelector('tr td[colspan="4"]');
+  if (noTasksMessage) {
+      tasksContainer.innerHTML = ''; // Clear the entire container
+  }
   if (row) {
     updateExistingRow(row, updatedTask);
   } else {
     const newRow = createNewRow(updatedTask);
-    tasksContainer.appendChild(newRow);
+    tasksContainer.prepend(newRow);
     // Ensures that if a new task is created while the user is on a page other than page 1,
     // the task list is refreshed to correctly display the new task.
     if (updatedTask.id && currentPage != 1) {

@@ -1,53 +1,92 @@
 const loginForm = document.getElementById('loginForm');
-
-loginForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const formData = new FormData(loginForm);
-    const data = Object.fromEntries(formData);
-    try {
-        const response = await fetch('/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (response.ok) {
-            // Redirect to dashboard immediately after successful login
-            window.location.href = '/dashboard';
-        } else if (response.status === 401) { // Check for 401 Unauthorized (token expired)
-            try {
-                const refreshResponse = await fetch('/refresh_token', {
-                    method: 'POST', 
-                });
-
-                if (refreshResponse.ok) {
-                    window.location.href = '/dashboard'; // Redirect
-                } else {
-                    // Refresh token is invalid or expired
-                    window.location.href = '/login'; // Redirect to login
-                    console.error("Refresh token error:", refreshResponse.status);
-                }
-            } catch (refreshError) {
-                console.error("No refresh token found:", refreshError);
-                window.location.href = '/login'; // Redirect to login
-            }
-            // Handle login errors
-            const errorData = await response.json();
-            const errorMessage = errorData.message || 'Login failed.';
-
-            // Display the error message
-            const errorMessageElement = document.getElementById('error-message');
-            errorMessageElement.textContent = errorMessage;
-            errorMessageElement.style.display = 'block';
-            console.error('Login failed:', response.status);
-        }
-    } catch (error) {
-        console.error('Login error:', error); // Handle errors during the fetch request itself, such as network errors, connection issues,etc.
-        alert('An error occurred during login.');
-    }
+const errorMessageElement = document.getElementById('error-message'); // Declare it here
+const logoutButton = document.getElementById('logoutButton');
+import axios from 'axios';
+const instance = axios.create({
+    baseURL: '/', // API base URL 
+    withCredentials: true, // Allows cookies to be sent
 });
 
-const logoutButton = document.getElementById('logoutButton');
+instance.interceptors.response.use(
+    (response) => {
+        return response; // Successful response
+    },
+    async (error) => {
+        const originalRequest = error.config;
+
+        if (error.response && error.response.status === 401) {
+            if (cookieExists('refreshToken')) {
+                try {
+                    await refreshAccessToken();
+                    return instance(originalRequest); // Retry request
+                } catch (refreshError) {
+                    // Refresh failed, redirect to login
+                    clearCookiesAndRedirect();
+                    return Promise.reject(refreshError);
+                }
+            } else {
+                // No refresh token, redirect to login
+                // clearCookiesAndRedirect();
+                displayError(error.response.data.message || 'Login failed.');
+                return Promise.reject(error);
+            }
+        }
+
+        return Promise.reject(error); // Other errors
+    }
+);
+
+async function refreshAccessToken() {
+    try {
+        const response = await instance.post('/refreshToken');
+        if (response.status !== 200) {
+            throw new Error('Refresh token failed');
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+function cookieExists(name) {
+    return document.cookie.split(';').some(cookie => cookie.trim().startsWith(`${name}=`));
+}
+
+function clearCookiesAndRedirect() {
+    document.cookie = "jwt=; max-age=0; path=/;";
+    document.cookie = "refreshToken=; max-age=0; path=/;";
+    window.location.href = '/login';
+}
+
+// Login form handling
+async function handleLogin(event) {
+    event.preventDefault();
+    const credentials = Object.fromEntries(new FormData(loginForm));
+    console.log('Attempting login with:', credentials);
+
+    try {
+        const response = await instance.post('/login', credentials);
+
+        if (response.status === 200) {
+            window.location.href = '/dashboard';
+            return;
+        }
+
+    } catch (error) {
+        if (error.response && error.response.status === 401) {
+            console.log('login failed', error.response)
+            displayError(error.response.data.message || 'Login failed.');
+        } else {
+            displayError('An unexpected error occurred.');
+            console.error('Login error:', error);
+        }
+    }
+}
+
+function displayError(message) {
+    errorMessageElement && (errorMessageElement.textContent = message, errorMessageElement.style.display = 'block');
+}
+
+loginForm && loginForm.addEventListener('submit', handleLogin);
 
 logoutButton.addEventListener('click', async () => {
     try {

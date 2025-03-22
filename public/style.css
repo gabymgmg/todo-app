@@ -20,11 +20,19 @@ body {
 .task-description,
 .task-status {
   max-width: 200px;
-  white-space: nowrap;
-  /* Prevent text wrapping */
+  white-space: nowrap; 
   overflow: hidden;
-  /* Hide overflowing content */
   text-overflow: ellipsis;
-  /* Show ellipsis (...) for truncated text */
 }
 
+table {
+  table-layout: fixed; /* Crucial for fixed column widths */
+  width: 100%; /* Ensure the table takes up the full width */
+  border-collapse: collapse;
+}
+
+td {
+  padding: 8px;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
