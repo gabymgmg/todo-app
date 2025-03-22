@@ -8,7 +8,7 @@ let db;
 if (process.env.NODE_ENV === 'test') {
   db = require('../models/index.mock');
 } else {
-  db = require('./models/index');
+  db = require('../models/index');
 }
 
 module.exports = {
@@ -28,7 +28,7 @@ module.exports = {
       }
       // check if user exists
       if (await db.User.findOne({ where: { email } })) {
-        return res.render('register', { error: messages.USER_ALREADY_EXISTS});
+        return res.render('register', { error: messages.USER_ALREADY_EXISTS });
       }
       // create the user
       await db.User.create({ name, email, password: bcrypt.hashSync(password, 8) });
@@ -43,12 +43,14 @@ module.exports = {
   },
 
   loginUser: (req, res) => {
-    passport.authenticate('local', { failureRedirect: '/login' }, (err, user, info) => {
+    passport.authenticate('local', (err, user, info) => {
       if (err) {
+        console.error(`Passport authentication error: ${err}`);
         return res.status(500).json({ message: messages.AUTHENTICATION_ERROR });
       }
       if (!user) {
-        return res.status(401).json({ message: messages.INVALID_CREDENTIALS});
+        // Send the specific error message from Passport.js
+        return res.status(401).json({ message: info.message });
       }
       // Generate Access Token (short-lived)
       const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -61,7 +63,7 @@ module.exports = {
       // Respond with token
       res.cookie('jwt', accessToken, { httpOnly: true }); // Set JWT as an HTTP-only cookie
       res.cookie('refreshToken', refreshToken, { httpOnly: true }); // Send the refresh token as a cookie
-      res.json({ message: messages.LOGIN_SUCCESS});
+      res.json({ message: messages.LOGIN_SUCCESS });
     })(req, res);
   },
 
@@ -88,8 +90,8 @@ module.exports = {
       const newAccessToken = jwt.sign({ id: decoded.id }, process.env.JWT_ACCESS_SECRET, { // Use access token secret
         expiresIn: process.env.JWT_ACCESS_EXPIRATION, // Short-lived
       });
-
-      res.status(200).json({ accessToken: newAccessToken }); // Send the new access token
+      res.cookie('jwt', newAccessToken, { httpOnly: true });
+      res.json({ message: 'Access token refreshed' });
     })
   }
 }
