@@ -10,10 +10,25 @@ const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
 let sequelize;
+const sslOptions = {
+  require: true,
+  rejectUnauthorized: env === 'production', // Set to true for production
+};
+
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  sequelize = new Sequelize(process.env[config.use_env_variable], {
+    ...config,
+    dialectOptions: {
+      ssl: sslOptions,
+    },
+  });
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  sequelize = new Sequelize(config.database, config.username, config.password, {
+    ...config,
+    dialectOptions: {
+      ssl: sslOptions,
+    },
+  });
 }
 
 fs
