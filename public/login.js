@@ -26,7 +26,6 @@ instance.interceptors.response.use(
                 }
             } else {
                 // No refresh token, redirect to login
-                // clearCookiesAndRedirect();
                 displayError(error.response.data.message || 'Login failed.');
                 return Promise.reject(error);
             }
