@@ -1,4 +1,4 @@
-# Task Tracker Application
+# TO-DO (Task Tracker) Application
 
 A simple tool for managing tasks, built with a Node.js and Express backend, a PostgreSQL database hosted on AWS RDS, and containerized using Docker for easy deployment. It also includes user login functionality implemented with Passport, and uses JWT for securing subsequent routes and API interactions.
 
