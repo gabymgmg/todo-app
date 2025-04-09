@@ -1,7 +1,6 @@
 # Task Tracker Application
 
-A simple task management application with user login. This project demonstrates basic containerization with Docker and deployment to AWS.
-This project demonstrates basic login, containerization with Docker and deployment to AWS.
+A simple tool for managing tasks, built with a Node.js and Express backend, a PostgreSQL database hosted on AWS RDS, and containerized using Docker for easy deployment. It also includes user login functionality implemented with Passport, and uses JWT for securing subsequent routes and API interactions.
 
 ## Key Features
 
@@ -24,10 +23,6 @@ This project demonstrates basic login, containerization with Docker and deployme
 * Authorization & Security: JSON Web Tokens (JWT)
 * Deployment: AWS EC2, AWS RDS
 
-## Documentation
-
-For details on setup and deployment, see the [docs](./docs/) directory.
-
 ## Quick Start (Local Development)
 
 1.  Clone the repository: `git clone [repository-url]`
@@ -38,16 +33,9 @@ For details on setup and deployment, see the [docs](./docs/) directory.
 
 ## Containerization
 
-This project utilizes Docker for containerization, ensuring a consistent environment across development and deployment. The `Dockerfile` in the `docker/` directory defines how the Docker image is built. For more details, see the [Containerization Documentation](./docs/containerization.md).
+This project utilizes Docker for containerization, ensuring a consistent environment across development and deployment. The `Dockerfile` file defines how the Docker image is built. 
 
 ## Deployment to AWS
 
-The application is deployed to an Amazon EC2 instance, with the database hosted on AWS Relational Database Service (RDS). The deployment process involves building and pushing a Docker image to ECR and running it on the EC2 instance. For a detailed walkthrough, see the [Deployment Documentation](./docs/deployment.md).
+The application is deployed to an Amazon EC2 instance, with the database hosted on AWS Relational Database Service (RDS). The deployment process involves building and pushing a Docker image to ECR and running it on the EC2 instance. For a detailed walkthrough.
 
-## Architecture
-
-A high-level overview of the application's architecture and component interactions can be found in the [Architecture Documentation](./docs/architecture.md).
-
-## Setup
-
-Detailed instructions for setting up the application for both local development and running within a Docker container can be found in the [Setup Documentation](./docs/setup.md).
