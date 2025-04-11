@@ -13,6 +13,12 @@ A simple tool for managing tasks, built with a Node.js and Express backend, a Po
 * Basic containerization with Docker for deployment.
 * Deployed to an AWS EC2 instance.
 
+  
+
+https://github.com/user-attachments/assets/012f2bf3-be7e-4bfe-88eb-5e7c71bd28bd
+
+
+
 ## Technologies Used
 
 * Backend: Node.js, Express
